@@ -3,7 +3,6 @@ var bodyParser = require("body-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
 const expHbars = require('express-handlebars');
-var path = require('path');
 var axios = require("axios");
 var cheerio = require("cheerio");
 
@@ -15,18 +14,17 @@ var PORT = 3000;
 // Initialize Express
 var app = express();
 
-// Configure middleware
-
 
 app.use(logger("dev"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-app.set('views', path.join(__dirname, 'views'));
+// app.set('views', path.join(__dirname, 'views'));
 app.engine("handlebars", expHbars({defaultLayout: "main"}));
 app.set("view engine", "handlebars");
 
 // Connect to the Mongo DB
+mongoose.Promise = Promise;
 mongoose.connect("mongodb://localhost/mongoscraper");
 
 // Routes
@@ -34,14 +32,14 @@ mongoose.connect("mongodb://localhost/mongoscraper");
 
 app.get("/scrape", function(req, res) {
 
-  axios.get("https://www.npr.org/sections/news/").then(function(response) {
+  axios.get("http://www.echojs.com/").then(function(response) {
     var $ = cheerio.load(response.data);
 
-    $("div" , "#jpvx17-0-Box-cwadsP dCWSJp").each(function(i, element) {
+    $("article h2").each(function(i, element) {
       var result = {};
 
       result.title = $(this)
-        .children("h3")
+        .children("a")
         .text();
       result.link = $(this)
         .children("a")
